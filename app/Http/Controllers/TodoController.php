@@ -13,13 +13,21 @@ class TodoController extends Controller
     }
 
     public function store(Request $request){
-        $todo = new Todo([
-            'title' => $request->input('title'),
-            'content' => $request->input('content')
-        ]);
-        $todo->save();
+        // $todo = new Todo([
+        //     'title' => $request->input('title'),
+        //     'content' => $request->input('content')
+        // ]);
+        // $todo->save();
 
-        return response()->json('Todo created successfully!');
+        $request->validate([
+            'user_id' => 'required',
+            'title'=> 'required',
+            'content' => 'required'
+        ]);
+
+        
+        
+        return Todo::create($request->all());
     }
 
     public function show($id)
@@ -33,7 +41,7 @@ class TodoController extends Controller
         $todo = Todo::find($id);
         $todo->update($request->all());
 
-        return response()->json('Todo data updated successfully!');
+        return $todo;
     }
 
     public function destroy($id)
@@ -41,6 +49,12 @@ class TodoController extends Controller
         $todo = Todo::find($id);
         $todo->delete();
 
-        return response()->json('Todo deleted successfully!');
+        return $todo;
+    }
+
+    // Search for a Todo by it's title
+    public function search($title)
+    {
+        return Todo::where('title', 'like', '%'.$title.'%')->get();
     }
 }
